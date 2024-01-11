@@ -38,6 +38,18 @@ $(ODIR)$(TDIR)%.o	:	$(TDIR)%.cpp
 	$(CC) $(CFLG) -c $< -o ${addprefix $(ODIR)$(TDIR), ${<:$(TDIR)%.cpp=%.o}}
 	echo "test\t\t$(YELLOW)compiled$(RESET)\t$(GREY)$(ODIR)$(TDIR)${<:$(TDIR)%.cpp=%.o}$(RESET)"
 # 
+${NAME}				:	$(OBJ)
+
+	mkdir -p $(BDIR)
+	ar rcs $(NAME) $(OBJ)
+	echo "$(GREEN)build\t\tlinked\t\t$(BOLD)$(NAME)$(RESET)"
+# 
+${TEST}				:	$(subst $(ODIR),$(ODIR)$(TDIR), $(TOBJ)) ${NAME}
+
+	mkdir -p $(BDIR)
+	$(CC) $(CFLG) $(LFLG) $(subst $(ODIR),$(ODIR)$(TDIR), $(TOBJ)) -o $(TEST) -L./bin/ -lui
+	echo "$(GREEN)test\t\tlinked\t\t$(BOLD)$(TEST)$(RESET)"
+# 
 help				:
 
 	echo "$(BOLD)You can run the following commands:$(RESET)$(GREY)\n\
@@ -52,18 +64,6 @@ info				:
 
 	echo "$(BOLD)RULE\t\tACTION\t\tTARGET$(RESET)"
 #
-${NAME}				:	$(OBJ)
-
-	mkdir -p $(BDIR)
-	ar rcs $(NAME) $(OBJ)
-	echo "$(GREEN)build\t\tlinked\t\t$(BOLD)$(NAME)$(RESET)"
-# 
-${TEST}				:	$(subst $(ODIR),$(ODIR)$(TDIR), $(TOBJ)) ${NAME}
-
-	mkdir -p $(BDIR)
-	$(CC) $(CFLG) $(LFLG) $(subst $(ODIR),$(ODIR)$(TDIR), $(TOBJ)) -o $(TEST) -L./bin/ -lui
-	echo "$(GREEN)test\t\tlinked\t\t$(BOLD)$(TEST)$(RESET)"
-# 
 build				:	info ${NAME}
 # 
 test				:	info ${TEST}
